@@ -350,6 +350,24 @@
   .live-grid span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
   .live-grid b{font:700 14px 'JetBrains Mono',monospace}
   @media (max-width:560px){ .live-panel{left:10px;right:10px;width:auto;bottom:10px} }
+
+  /* ===== SNAKES ===== */
+  .snakes-stage{justify-content:center;padding:14px}
+  .snk-board{position:relative;width:min(380px,88vw);aspect-ratio:1;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
+  .snk-tile{border-radius:10px;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font:800 15px 'JetBrains Mono',monospace;color:var(--muted);position:relative;transition:box-shadow .15s,transform .15s,background .2s}
+  .snk-tile.mult{color:var(--green)}
+  .snk-tile.snake{color:var(--red);font-size:24px}
+  .snk-tile.start{color:var(--accent-2);font-size:11px;letter-spacing:.5px}
+  .snk-tile.active{box-shadow:0 0 0 2px var(--gold),0 0 18px rgba(245,194,75,.6);transform:scale(1.05);z-index:2}
+  .snk-tile.hit-snake{background:rgba(255,90,107,.28);border-color:var(--red)}
+  .snk-tile.hit-mult{background:rgba(61,220,151,.22);border-color:var(--green)}
+  .snk-center{grid-column:2/4;grid-row:2/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none}
+  .snk-dice{display:flex;gap:8px}
+  .die{font-size:44px;line-height:1;color:var(--text);filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+  .die.roll{animation:dieShake .5s ease}
+  @keyframes dieShake{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-6px) rotate(-12deg)}75%{transform:translateY(-6px) rotate(12deg)}}
+  .snk-total{font:800 22px 'JetBrains Mono',monospace;color:var(--gold)}
+  .snk-total.lose{color:var(--red)}
 </style>
 
 <nav class="nav">
@@ -623,6 +641,7 @@ function route(name){
   else if(name==='pump') renderPump();
   else if(name==='dice') renderDice();
   else if(name==='cases') renderCases();
+  else if(name==='snakes') renderSnakes();
 }
 
 // ============ HOME ============
@@ -637,6 +656,7 @@ const games = [
   {id:'pump', name:'Pump', cls:'crash', icon:`<g><ellipse cx="50" cy="42" rx="26" ry="30" fill="none" stroke="#fff" stroke-width="5"/><path d="M44 70 L56 70 L50 78 Z" fill="#fff"/><line x1="50" y1="78" x2="50" y2="92" stroke="#fff" stroke-width="3"/><text x="50" y="48" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#fff" font-weight="700">1.5x</text></g>`},
   {id:'dice', name:'Dice', cls:'limbo', icon:`<g><rect x="18" y="18" width="64" height="64" rx="12" fill="#fff"/><circle cx="36" cy="36" r="6" fill="#151A3D"/><circle cx="64" cy="36" r="6" fill="#151A3D"/><circle cx="50" cy="50" r="6" fill="#151A3D"/><circle cx="36" cy="64" r="6" fill="#151A3D"/><circle cx="64" cy="64" r="6" fill="#151A3D"/></g>`},
   {id:'cases', name:'Cases', cls:'crash', icon:`<g><rect x="20" y="40" width="60" height="42" rx="6" fill="#fff"/><path d="M20 40 L50 24 L80 40 Z" fill="#fff" opacity=".85"/><rect x="44" y="40" width="12" height="42" fill="#151A3D"/><circle cx="50" cy="58" r="5" fill="#F5C24B"/></g>`},
+  {id:'snakes', name:'Snakes', cls:'mines', icon:`<g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M28 20 q22 12 0 26 q-22 14 0 28"/><circle cx="30" cy="18" r="3" fill="#fff" stroke="none"/><path d="M60 78 q22 -12 0 -26 q-22 -14 0 -28" opacity=".55"/></g>`},
 ];
 
 function renderHome(){
@@ -1558,6 +1578,172 @@ function casesAuto(){
   runAuto('cases', 'casesBet', bet => new Promise(resolve=>{
     setBal(state.bal - bet);
     casesRun(bet, 650).then(({profit})=> resolve(profit));
+  }));
+}
+
+// ============ SNAKES ============
+// Stake-style Snakes: roll two dice, hop around a 12-tile board, stack
+// multipliers on each landing, and cash out before you land on a snake.
+const SNAKES_DIFF = {
+  easy:   {snakes:1, min:1.08, max:1.96,  label:'Easy'},
+  medium: {snakes:3, min:1.15, max:3.92,  label:'Medium'},
+  hard:   {snakes:5, min:1.50, max:7.35,  label:'Hard'},
+  expert: {snakes:7, min:4.00, max:9.80,  label:'Expert'},
+  master: {snakes:9, min:8.00, max:17.84, label:'Master'},
+};
+const SNK_CELLS = [[1,1],[1,2],[1,3],[1,4],[2,4],[3,4],[4,4],[4,3],[4,2],[4,1],[3,1],[2,1]];
+const DICE_FACE = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+const SNK_SNAKE = '🐍';
+let snakesState = null;
+function snakesBuildBoard(diff){
+  const d = SNAKES_DIFF[diff];
+  const tiles = Array.from({length:12}, ()=>({type:'mult', mult:1}));
+  tiles[0] = {type:'start', mult:1};
+  const idxs = [1,2,3,4,5,6,7,8,9,10,11];
+  for(let i=idxs.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idxs[i],idxs[j]]=[idxs[j],idxs[i]]; }
+  for(let s=0;s<d.snakes;s++) tiles[idxs[s]] = {type:'snake', mult:0};
+  for(let m=d.snakes;m<idxs.length;m++){
+    const val = d.min + (d.max-d.min)*Math.pow(Math.random(),1.4);
+    tiles[idxs[m]] = {type:'mult', mult:Math.round(val*100)/100};
+  }
+  return tiles;
+}
+function renderSnakes(){
+  const df = cfg.snakesDiff || 'medium';
+  const diffOpts = ()=>Object.keys(SNAKES_DIFF).map(k=>`<option value="${k}" ${k===df?'selected':''}>${SNAKES_DIFF[k].label} — ${SNAKES_DIFF[k].snakes} ${SNK_SNAKE}</option>`).join('');
+  app.innerHTML = `
+    <div class="game-wrap">
+      ${panel({
+        title:'Bet',
+        body: amountField('snakesBet') + `
+          <div class="field"><label>Difficulty</label>
+            <select class="num" id="snakesDiff" onchange="cfg.snakesDiff=this.value;saveCfg();renderSnakes()">${diffOpts()}</select></div>`,
+        action: `<button class="btn-primary" id="snakesBtn" onclick="snakesBegin()">Roll</button>
+          <button class="btn-primary btn-ghost" id="snakesCashBtn" style="display:none;margin-top:8px" onclick="snakesCashout()">Cashout $0.00</button>
+          <div class="stat-row"><span>Current multiplier</span><span id="snakesMult">1.00×</span></div>
+          <div class="stat-row"><span>Total cash out</span><span id="snakesCash">$0.00</span></div>`,
+        autoBody: amountField('snakesBet') + `
+          <div class="field"><label>Difficulty</label>
+            <select class="num" id="snakesDiffAuto" onchange="cfg.snakesDiff=this.value;saveCfg()">${diffOpts()}</select></div>
+          <div class="field"><label>Rolls per round</label>
+            <input class="num" id="snakesAutoRolls" type="number" min="1" max="20" step="1" value="${cfg.snakesAutoRolls||3}" oninput="cfg.snakesAutoRolls=Math.min(20,Math.max(1,parseInt(this.value)||1));saveCfg()"></div>
+          ` + autoConfig('snakes'),
+        autoAction: `<button class="btn-primary" id="snakes_autoBtn" onclick="snakesAuto()">Start Autobet</button>`
+      })}
+      <div class="stage snakes-stage">
+        <div class="snk-board" id="snkBoard"></div>
+      </div>
+    </div>`;
+  snakesDrawBoard(snakesBuildBoard(df), 0);
+  initAutoButtons('snakes');
+}
+function snakesDrawBoard(tiles, active){
+  const board = document.getElementById('snkBoard'); if(!board) return;
+  let html = '';
+  tiles.forEach((t,i)=>{
+    const [r,c] = SNK_CELLS[i];
+    let cls='snk-tile', txt='';
+    if(t.type==='start'){ cls+=' start'; txt='START'; }
+    else if(t.type==='snake'){ cls+=' snake'; txt=SNK_SNAKE; }
+    else { cls+=' mult'; txt=t.mult.toFixed(2)+'×'; }
+    if(i===active) cls+=' active';
+    html += `<div class="${cls}" data-i="${i}" style="grid-row:${r};grid-column:${c}">${txt}</div>`;
+  });
+  html += `<div class="snk-center"><div class="snk-dice"><span class="die" id="snkD1">⚀</span><span class="die" id="snkD2">⚀</span></div><div class="snk-total" id="snkTotal">1.00×</div></div>`;
+  board.innerHTML = html;
+}
+function snakesBegin(){
+  const bet = readBet('snakesBet');
+  if(bet<=0){ toast('Enter a bet','lose'); return; }
+  const df = cfg.snakesDiff || 'medium';
+  state.inGame = true;
+  setBal(state.bal - bet);
+  snakesState = {bet, df, board: snakesBuildBoard(df), idx:0, total:1, rolling:false};
+  snakesDrawBoard(snakesState.board, 0);
+  const cb=document.getElementById('snakesCashBtn'); cb.style.display=''; cb.disabled=true;
+  snakesUpdate();
+  snakesRoll();
+}
+function snakesRoll(){
+  const st=snakesState; if(!st||st.rolling) return;
+  st.rolling=true;
+  const cb=document.getElementById('snakesCashBtn'); if(cb) cb.disabled=true;
+  const btn=document.getElementById('snakesBtn'); if(btn) btn.disabled=true;
+  const d1=1+Math.floor(Math.random()*6), d2=1+Math.floor(Math.random()*6), sum=d1+d2;
+  const e1=document.getElementById('snkD1'), e2=document.getElementById('snkD2');
+  e1.classList.add('roll'); e2.classList.add('roll');
+  let ticks=0;
+  const shuffle=setInterval(()=>{
+    e1.textContent=DICE_FACE[1+Math.floor(Math.random()*6)];
+    e2.textContent=DICE_FACE[1+Math.floor(Math.random()*6)];
+    if(++ticks>6){ clearInterval(shuffle); e1.textContent=DICE_FACE[d1]; e2.textContent=DICE_FACE[d2]; e1.classList.remove('roll'); e2.classList.remove('roll'); snakesStep(sum); }
+  },60);
+}
+function snakesStep(sum){
+  const st=snakesState; let step=0;
+  const walk=setInterval(()=>{
+    document.querySelectorAll('.snk-tile').forEach(el=>el.classList.remove('active'));
+    st.idx=(st.idx+1)%12; step++;
+    const el=document.querySelector(`.snk-tile[data-i="${st.idx}"]`); if(el) el.classList.add('active');
+    if(step>=sum){ clearInterval(walk); snakesLand(); }
+  },110);
+}
+function snakesLand(){
+  const st=snakesState; const tile=st.board[st.idx];
+  const el=document.querySelector(`.snk-tile[data-i="${st.idx}"]`);
+  if(tile.type==='snake'){
+    if(el) el.classList.add('hit-snake');
+    const tot=document.getElementById('snkTotal'); tot.classList.add('lose'); tot.textContent='0.00×';
+    toast(`Snake @ ${st.total.toFixed(2)}× — $${st.bet.toFixed(2)}`,'lose');
+    logBet('Snakes', st.bet, -st.bet);
+    snakesEnd(); return;
+  }
+  if(tile.type==='mult'){
+    st.total *= tile.mult;
+    if(el){ el.classList.add('hit-mult'); setTimeout(()=>el.classList.remove('hit-mult'),450); }
+  }
+  document.getElementById('snkTotal').textContent = st.total.toFixed(2)+'×';
+  st.rolling=false;
+  const cb=document.getElementById('snakesCashBtn'); if(cb) cb.disabled = st.total<=1;
+  const btn=document.getElementById('snakesBtn'); if(btn){ btn.disabled=false; btn.textContent='Roll Again'; btn.onclick=snakesRoll; }
+  snakesUpdate();
+}
+function snakesUpdate(){
+  const st=snakesState; if(!st) return;
+  document.getElementById('snakesMult').textContent = st.total.toFixed(2)+'×';
+  document.getElementById('snakesCash').textContent = '$'+(st.bet*st.total).toFixed(2);
+  const cb=document.getElementById('snakesCashBtn'); if(cb) cb.textContent=`Cashout $${(st.bet*st.total).toFixed(2)}`;
+}
+function snakesCashout(){
+  const st=snakesState; if(!st||st.rolling||st.total<=1) return;
+  const win=st.bet*st.total, profit=win-st.bet;
+  setBal(state.bal+win);
+  toast(`+$${profit.toFixed(2)} @ ${st.total.toFixed(2)}×`,'win');
+  logBet('Snakes', st.bet, profit);
+  snakesEnd();
+}
+function snakesEnd(){
+  snakesState=null; state.inGame=false;
+  const btn=document.getElementById('snakesBtn'); if(btn){ btn.textContent='Roll'; btn.onclick=snakesBegin; btn.disabled=false; }
+  const cb=document.getElementById('snakesCashBtn'); if(cb) cb.style.display='none';
+  if(state.bal<=0) showWheel();
+}
+function snakesAuto(){
+  const rolls=Math.min(20,Math.max(1,parseInt(autoQ('#snakesAutoRolls')?.value)||3));
+  const diff=autoQ('#snakesDiffAuto')?.value||cfg.snakesDiff||'medium';
+  runAuto('snakes','snakesBet', bet=>new Promise(resolve=>{
+    setBal(state.bal-bet);
+    const board=snakesBuildBoard(diff);
+    let idx=0, total=1, alive=true;
+    for(let r=0;r<rolls;r++){
+      const sum=(1+Math.floor(Math.random()*6))+(1+Math.floor(Math.random()*6));
+      idx=(idx+sum)%12; const tile=board[idx];
+      if(tile.type==='snake'){ alive=false; break; }
+      if(tile.type==='mult') total*=tile.mult;
+    }
+    let profit=-bet;
+    if(alive){ const win=bet*total; setBal(state.bal+win); profit=win-bet; }
+    logBet('Snakes',bet,profit); resolve(profit);
   }));
 }
 
