@@ -1,4 +1,9 @@
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1230">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Duel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -268,12 +273,90 @@
   .pump-flash.fire{animation:pumpFlash .3s ease-out}
   @keyframes pumpFlash{0%{opacity:.9}100%{opacity:0}}
   .pump-shard{position:absolute;width:10px;height:10px;background:var(--accent-2);border-radius:2px;pointer-events:none;z-index:2}
+
+  /* ===== Mobile polish ===== */
+  html{-webkit-text-size-adjust:100%}
+  .nav{padding-top:calc(14px + env(safe-area-inset-top))}
+  .footer{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  @media (max-width:900px){
+    .nav{padding:calc(10px + env(safe-area-inset-top)) 12px 10px;gap:4px}
+    .logo{font-size:19px;margin-right:6px}
+    .logo::before{width:8px;height:8px;margin-right:4px}
+    .nav .tab{padding:7px 9px;font-size:13px}
+    .nav .bal{padding:7px 10px;font-size:14px}
+    .spin-btn{padding:8px 11px;font-size:13px}
+    .hero{padding:34px 18px 26px;min-height:150px}
+    .game-wrap{padding:12px;gap:12px}
+    .grid{grid-template-columns:repeat(2,1fr);gap:12px}
+    .btn-primary{padding:16px}
+    .field .amount input,.field .num,.field select{padding:14px;font-size:16px}
+    .field .amount button{padding:0 14px}
+    .stat-cards{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:420px){
+    .nav .tab span{display:none}
+    .grid{grid-template-columns:1fr 1fr;gap:10px}
+  }
+
+  /* ===== DICE ===== */
+  .dice-stage{justify-content:center;gap:26px;padding-top:30px}
+  .dice-result{position:absolute;top:12px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:26px;padding:6px 18px;border-radius:10px;background:#12173A;border:1px solid var(--line);min-width:118px;text-align:center;transition:color .15s,box-shadow .2s;z-index:3}
+  .dice-result.win{color:var(--green);box-shadow:0 0 20px rgba(61,220,151,.25)}
+  .dice-result.lose{color:var(--red);box-shadow:0 0 20px rgba(255,90,107,.2)}
+  .dice-track-wrap{width:100%;max-width:600px;margin:auto;padding:22px 12px 0}
+  .dice-scale{display:flex;justify-content:space-between;color:var(--muted);font:600 12px 'JetBrains Mono',monospace;margin-bottom:8px}
+  .dice-track{position:relative;height:16px;border-radius:9px;background:var(--red);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+  .dice-win{position:absolute;top:0;bottom:0;background:var(--green);border-radius:9px;transition:left .1s,right .1s}
+  .dice-thumb{position:absolute;top:50%;width:38px;height:38px;transform:translate(-50%,-50%);border-radius:9px;background:linear-gradient(135deg,var(--accent-2),var(--accent));box-shadow:0 4px 12px rgba(0,0,0,.45);display:grid;place-items:center;cursor:grab;z-index:2}
+  .dice-thumb::before,.dice-thumb::after{content:"";position:absolute;width:3px;height:14px;background:rgba(255,255,255,.85);border-radius:2px}
+  .dice-thumb::before{transform:translateX(-4px)} .dice-thumb::after{transform:translateX(4px)}
+  .dice-thumb.drag{cursor:grabbing;transform:translate(-50%,-50%) scale(1.08)}
+  .dice-marker{position:absolute;top:-20px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--gold);transform:translateX(-50%);transition:left .3s cubic-bezier(.2,.8,.3,1);opacity:0;z-index:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+  .dice-marker.show{opacity:1}
+  .dice-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:600px;margin:auto}
+  .dice-box{background:#12173A;border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+  .dice-box label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+  .dice-box .row{display:flex;align-items:center;gap:4px}
+  .dice-box input{width:100%;background:transparent;border:0;color:var(--text);font:700 15px 'JetBrains Mono',monospace;outline:none;min-width:0;padding:0}
+  .dice-box .suffix{color:var(--muted);font:700 14px 'JetBrains Mono',monospace}
+  .dice-flip{border:1px solid var(--line);border-radius:7px;padding:2px 7px;color:var(--muted);background:var(--panel);font-size:14px;flex:0 0 auto}
+  .dice-flip:hover{color:var(--text)}
+  @media (max-width:900px){ .dice-stage{min-height:340px} }
+
+  /* ===== CASES ===== */
+  .cases-stage{justify-content:center;gap:18px;padding-top:18px}
+  .cases-reel-wrap{position:relative;width:100%;max-width:660px;margin:auto;overflow:hidden;border-radius:12px;background:#12173A;border:1px solid var(--line);padding:14px 0}
+  .cases-reel-wrap::before,.cases-reel-wrap::after{content:"";position:absolute;top:0;bottom:0;width:70px;z-index:2;pointer-events:none}
+  .cases-reel-wrap::before{left:0;background:linear-gradient(90deg,#12173A,transparent)}
+  .cases-reel-wrap::after{right:0;background:linear-gradient(270deg,#12173A,transparent)}
+  .cases-pointer{position:absolute;top:0;bottom:0;left:50%;width:3px;background:var(--gold);transform:translateX(-50%);z-index:3;box-shadow:0 0 12px var(--gold)}
+  .cases-pointer::before{content:"";position:absolute;top:-2px;left:50%;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid var(--gold)}
+  .cases-pointer::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:9px solid var(--gold)}
+  .cases-reel{display:flex;gap:10px;padding:0 10px;will-change:transform}
+  .cases-item{flex:0 0 92px;height:92px;border-radius:10px;display:grid;place-items:center;background:var(--panel);border:2px solid var(--line);font:800 17px 'JetBrains Mono',monospace;transition:box-shadow .2s,transform .2s}
+  .cases-item.won{transform:scale(1.04)}
+  .cases-payouts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:660px;margin:auto}
+  .cases-chip{padding:5px 9px;border-radius:8px;font:700 12px 'JetBrains Mono',monospace;background:#12173A;border:1px solid var(--line)}
+
+  /* ===== LIVE STATS ===== */
+  .live-panel{position:fixed;right:16px;bottom:16px;width:300px;background:var(--bg-2);border:1px solid var(--line);border-radius:14px;z-index:50;box-shadow:0 14px 44px rgba(0,0,0,.55);overflow:hidden;padding-bottom:12px}
+  .live-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--panel);cursor:move;font-weight:700;font-size:14px;user-select:none}
+  .live-head .grp{display:flex;gap:4px}
+  .live-head button{color:var(--muted);padding:3px 8px;border-radius:6px;font-size:12px}
+  .live-head button:hover{color:var(--text);background:var(--panel-2)}
+  #liveCanvas{display:block;width:calc(100% - 24px);height:120px;margin:12px;background:#12173A;border-radius:10px}
+  .live-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 12px}
+  .live-grid>div{background:#12173A;border:1px solid var(--line);border-radius:8px;padding:8px 6px;text-align:center}
+  .live-grid span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+  .live-grid b{font:700 14px 'JetBrains Mono',monospace}
+  @media (max-width:560px){ .live-panel{left:10px;right:10px;width:auto;bottom:10px} }
 </style>
 
 <nav class="nav">
   <div class="logo" onclick="route('home')">Duel</div>
   <div class="tab" id="tabOrig" onclick="route('home')">✕ Originals</div>
   <div class="tab" id="tabStats" onclick="route('stats')">♛ My Stats</div>
+  <div class="tab" id="tabLive" onclick="toggleLive()">📈 Live Stats</div>
   <div class="spacer"></div>
   <div class="bal"><span class="coin"></span><span id="balDisplay">30.00</span></div>
   <button class="spin-btn" onclick="showWheel()" title="Spin the wheel for bonus balance">
@@ -286,6 +369,22 @@
 </nav>
 
 <div id="app"></div>
+
+<div id="livePanel" class="live-panel" style="display:none">
+  <div class="live-head" id="liveHead">
+    <span>📈 Live Stats</span>
+    <div class="grp"><button onclick="sessionReset()">Reset</button><button onclick="toggleLive()">✕</button></div>
+  </div>
+  <canvas id="liveCanvas" width="288" height="120"></canvas>
+  <div class="live-grid">
+    <div><span>Profit</span><b id="liveProfit">$0.00</b></div>
+    <div><span>Wagered</span><b id="liveWagered">$0.00</b></div>
+    <div><span>Bets</span><b id="liveBets">0</b></div>
+    <div><span>Wins</span><b id="liveWins">0</b></div>
+    <div><span>Losses</span><b id="liveLosses">0</b></div>
+    <div><span>Win rate</span><b id="liveRate">0%</b></div>
+  </div>
+</div>
 
 <div class="footer">Duel — a reconstruction. Guest play, virtual balance only.</div>
 
@@ -429,6 +528,75 @@ function logBet(game, bet, profit){
   history.unshift({game, bet, profit, t: Date.now()});
   history = history.slice(0,200);
   localStorage.setItem(LS.hx, JSON.stringify(history));
+  sessionTrack(game, bet, profit);
+}
+// ===== Live session stats =====
+let liveOpen = false;
+const sess = { pts:[0], wins:0, losses:0, wagered:0, profit:0, best:0, worst:0, count:0 };
+function sessionTrack(game, bet, profit){
+  sess.count++; sess.wagered += bet; sess.profit += profit;
+  if(profit > 0) sess.wins++; else sess.losses++;
+  if(sess.profit > sess.best) sess.best = sess.profit;
+  if(sess.profit < sess.worst) sess.worst = sess.profit;
+  sess.pts.push(sess.profit);
+  if(sess.pts.length > 400) sess.pts.shift();
+  if(liveOpen) drawLive();
+}
+function sessionReset(){
+  sess.pts=[0]; sess.wins=sess.losses=sess.wagered=sess.count=0;
+  sess.profit=sess.best=sess.worst=0;
+  if(liveOpen) drawLive();
+}
+function toggleLive(){
+  liveOpen = !liveOpen;
+  const p = document.getElementById('livePanel');
+  p.style.display = liveOpen ? '' : 'none';
+  document.getElementById('tabLive').classList.toggle('active', liveOpen);
+  if(liveOpen) drawLive();
+}
+function drawLive(){
+  const c = document.getElementById('liveCanvas'); if(!c) return;
+  const ctx = c.getContext('2d'); const W=c.width, H=c.height;
+  ctx.clearRect(0,0,W,H);
+  const pts = sess.pts, n = pts.length;
+  let mn = Math.min(0, ...pts), mx = Math.max(0, ...pts);
+  if(mx === mn){ mx += 1; mn -= 1; }
+  const pad = 8;
+  const X = i => pad + (i/Math.max(1,n-1))*(W-2*pad);
+  const Y = v => H-pad - ((v-mn)/(mx-mn))*(H-2*pad);
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad,Y(0)); ctx.lineTo(W-pad,Y(0)); ctx.stroke();
+  const up = sess.profit >= 0;
+  const col = up ? '#3DDC97' : '#FF5A6B';
+  ctx.beginPath();
+  pts.forEach((v,i)=>{ const x=X(i), y=Y(v); i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
+  ctx.lineTo(X(n-1), Y(0)); ctx.lineTo(X(0), Y(0)); ctx.closePath();
+  ctx.fillStyle = up ? 'rgba(61,220,151,.13)' : 'rgba(255,90,107,.13)'; ctx.fill();
+  ctx.strokeStyle=col; ctx.lineWidth=2; ctx.lineJoin='round';
+  ctx.beginPath();
+  pts.forEach((v,i)=>{ const x=X(i), y=Y(v); i ? ctx.lineTo(x,y) : ctx.moveTo(x,y); });
+  ctx.stroke();
+  const set=(id,val)=>{ const e=document.getElementById(id); if(e) e.textContent=val; };
+  const pe = document.getElementById('liveProfit');
+  set('liveProfit', (sess.profit>=0?'+$':'-$')+Math.abs(sess.profit).toFixed(2));
+  if(pe) pe.style.color = up ? 'var(--green)' : 'var(--red)';
+  set('liveWagered', '$'+sess.wagered.toFixed(2));
+  set('liveWins', sess.wins);
+  set('liveLosses', sess.losses);
+  set('liveBets', sess.count);
+  set('liveRate', (sess.count? (sess.wins/sess.count*100):0).toFixed(1)+'%');
+}
+function liveDragInit(){
+  const p=document.getElementById('livePanel'), head=document.getElementById('liveHead');
+  if(!head) return;
+  head.addEventListener('pointerdown', e=>{
+    if(e.target.tagName==='BUTTON') return;
+    const r=p.getBoundingClientRect(), ox=e.clientX-r.left, oy=e.clientY-r.top;
+    p.style.right='auto'; p.style.bottom='auto'; p.style.left=r.left+'px'; p.style.top=r.top+'px';
+    const mv=ev=>{ p.style.left=(ev.clientX-ox)+'px'; p.style.top=(ev.clientY-oy)+'px'; };
+    const up=()=>{ window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up); };
+    window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up);
+  });
 }
 
 function toast(msg, cls='win'){
@@ -453,6 +621,8 @@ function route(name){
   else if(name==='blackjack') renderBlackjack();
   else if(name==='plinko') renderPlinko();
   else if(name==='pump') renderPump();
+  else if(name==='dice') renderDice();
+  else if(name==='cases') renderCases();
 }
 
 // ============ HOME ============
@@ -465,6 +635,8 @@ const games = [
   {id:'blackjack', name:'Blackjack', cls:'blackjack', icon:`<g><rect x="20" y="18" width="56" height="72" rx="8" fill="#fff"/><text x="30" y="42" font-family="Inter" font-size="20" font-weight="800" fill="#111">A</text><path d="M48 52 l10 14 h-8 l4 8 h-12 l4 -8 h-8 z" fill="#111"/></g>`},
   {id:'plinko', name:'Plinko', cls:'plinko', icon:`<g fill="#fff"><circle cx="30" cy="26" r="4"/><circle cx="50" cy="26" r="4"/><circle cx="70" cy="26" r="4"/><circle cx="25" cy="42" r="4"/><circle cx="45" cy="42" r="4"/><circle cx="65" cy="42" r="4"/><circle cx="75" cy="42" r="4"/><circle cx="20" cy="58" r="4"/><circle cx="40" cy="58" r="4"/><circle cx="60" cy="58" r="4"/><circle cx="80" cy="58" r="4"/><circle cx="50" cy="20" r="6" fill="#F5C24B" stroke="#fff" stroke-width="2"/></g>`},
   {id:'pump', name:'Pump', cls:'crash', icon:`<g><ellipse cx="50" cy="42" rx="26" ry="30" fill="none" stroke="#fff" stroke-width="5"/><path d="M44 70 L56 70 L50 78 Z" fill="#fff"/><line x1="50" y1="78" x2="50" y2="92" stroke="#fff" stroke-width="3"/><text x="50" y="48" text-anchor="middle" font-family="JetBrains Mono" font-size="13" fill="#fff" font-weight="700">1.5x</text></g>`},
+  {id:'dice', name:'Dice', cls:'limbo', icon:`<g><rect x="18" y="18" width="64" height="64" rx="12" fill="#fff"/><circle cx="36" cy="36" r="6" fill="#151A3D"/><circle cx="64" cy="36" r="6" fill="#151A3D"/><circle cx="50" cy="50" r="6" fill="#151A3D"/><circle cx="36" cy="64" r="6" fill="#151A3D"/><circle cx="64" cy="64" r="6" fill="#151A3D"/></g>`},
+  {id:'cases', name:'Cases', cls:'crash', icon:`<g><rect x="20" y="40" width="60" height="42" rx="6" fill="#fff"/><path d="M20 40 L50 24 L80 40 Z" fill="#fff" opacity=".85"/><rect x="44" y="40" width="12" height="42" fill="#151A3D"/><circle cx="50" cy="58" r="5" fill="#F5C24B"/></g>`},
 ];
 
 function renderHome(){
@@ -989,7 +1161,15 @@ function renderPump(){
           <button class="btn-primary btn-ghost" id="pumpCashBtn" style="display:none;margin-top:8px" onclick="pumpCashout()">Cashout $0.00</button>
           <div class="stat-row"><span>Next pump pays</span><span id="pumpNext">—</span></div>
           <div class="stat-row"><span>Total cash out</span><span id="pumpCash">$0.00</span></div>`,
-        autoDisabled: true
+        autoBody: amountField('pumpBet') + `
+          <div class="field"><label>Difficulty</label>
+            <select class="num" id="pumpDiffAuto" onchange="cfg.pumpDiff=this.value;saveCfg()">
+              ${Object.keys(PUMP_DIFF).map(k=>`<option value="${k}" ${k===df?'selected':''}>${PUMP_DIFF[k].label} — ${(PUMP_DIFF[k].pop*100).toFixed(0)}% pop</option>`).join('')}
+            </select></div>
+          <div class="field"><label>Pumps per round</label>
+            <input class="num" id="pumpAutoPumps" type="number" min="1" max="25" step="1" value="${cfg.pumpAutoPumps||3}" oninput="cfg.pumpAutoPumps=Math.min(25,Math.max(1,parseInt(this.value)||1));saveCfg()"></div>
+          ` + autoConfig('pump'),
+        autoAction: `<button class="btn-primary" id="pump_autoBtn" onclick="pumpAuto()">Start Autobet</button>`
       })}
       <div class="stage pump-stage">
         <div class="pump-arena" id="pumpArena">
@@ -1005,6 +1185,7 @@ function renderPump(){
       </div>
     </div>`;
   pumpRefresh();
+  initAutoButtons('pump');
 }
 function pumpRefresh(){
   const pop = PUMP_DIFF[(cfg.pumpDiff||'medium')].pop;
@@ -1099,6 +1280,285 @@ function pumpEnd(){
   const cb = document.getElementById('pumpCashBtn'); if(cb) cb.style.display='none';
   pumpRefresh();
   if(state.bal<=0) showWheel();
+}
+
+
+function pumpAuto(){
+  const pumps = Math.min(25, Math.max(1, parseInt(autoQ('#pumpAutoPumps')?.value)||3));
+  const diff = autoQ('#pumpDiffAuto')?.value || cfg.pumpDiff || 'medium';
+  const pop = PUMP_DIFF[diff].pop;
+  runAuto('pump', 'pumpBet', bet => new Promise(resolve=>{
+    setBal(state.bal - bet);
+    let survived = true;
+    for(let i=0;i<pumps;i++){ if(pumpRand() < pop){ survived=false; break; } }
+    let profit = -bet;
+    const m = document.getElementById('pumpMulti');
+    if(survived){
+      const win = bet * pumpMultAfter(pop, pumps);
+      setBal(state.bal + win); profit = win - bet;
+      if(m){ m.textContent = pumpMultAfter(pop,pumps).toFixed(2)+'×'; m.className='pump-multi'; }
+    } else if(m){ m.textContent='0.00×'; m.className='pump-multi lose'; }
+    logBet('Pump', bet, profit);
+    resolve(profit);
+  }));
+}
+
+// ============ DICE ============
+// Exact-style recreation of duel.com / Stake Dice.
+function diceCalc(){
+  const dir = cfg.diceDir || 'over';
+  let target = cfg.diceTarget;
+  if(target === undefined) target = 50.50;
+  const chance = dir === 'over' ? (100 - target) : target;
+  const mult = 99 / chance;
+  return {dir, target, chance, mult};
+}
+function diceClampTarget(t){ return Math.min(98, Math.max(2, t)); }
+function renderDice(){
+  const {dir} = diceCalc();
+  app.innerHTML = `
+    <div class="game-wrap">
+      ${panel({
+        title:'Bet',
+        body: amountField('diceBet') + `
+          <div class="field">
+            <label>Profit on Win</label>
+            <div class="amount"><input id="diceProfit" type="text" readonly value="0.00" style="color:var(--green)"></div>
+          </div>`,
+        action: `<button class="btn-primary" id="diceBtn" onclick="dicePlay()">Bet</button>`,
+        autoBody: amountField('diceBet') + autoConfig('dice'),
+        autoAction: `<button class="btn-primary" id="dice_autoBtn" onclick="diceAuto()">Start Autobet</button>`
+      })}
+      <div class="stage dice-stage">
+        <div class="dice-result" id="diceResult">0.00</div>
+        <div class="dice-track-wrap">
+          <div class="dice-scale"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <div class="dice-track" id="diceTrack">
+            <div class="dice-win" id="diceWin"></div>
+            <div class="dice-marker" id="diceMarker"></div>
+            <div class="dice-thumb" id="diceThumb"></div>
+          </div>
+        </div>
+        <div class="dice-boxes">
+          <div class="dice-box">
+            <label>Multiplier</label>
+            <div class="row"><input id="diceMult" type="number" step="0.0001" onchange="diceEdit('mult',this.value)"><span class="suffix">×</span></div>
+          </div>
+          <div class="dice-box">
+            <label>Roll ${dir==='over'?'Over':'Under'}</label>
+            <div class="row"><input id="diceTargetIn" type="number" step="0.01" onchange="diceEdit('target',this.value)"><button class="dice-flip" onclick="diceFlip()" title="Switch Over / Under">⇅</button></div>
+          </div>
+          <div class="dice-box">
+            <label>Win Chance</label>
+            <div class="row"><input id="diceChance" type="number" step="0.01" onchange="diceEdit('chance',this.value)"><span class="suffix">%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  diceRefresh();
+  diceBindDrag();
+  initAutoButtons('dice');
+  const bet = document.getElementById('diceBet');
+  if(bet) bet.addEventListener('input', diceProfit);
+}
+function diceRefresh(){
+  const {dir, target, chance, mult} = diceCalc();
+  const mEl = document.getElementById('diceMult');
+  const tEl = document.getElementById('diceTargetIn');
+  const cEl = document.getElementById('diceChance');
+  if(!mEl) return;
+  if(document.activeElement!==mEl) mEl.value = mult.toFixed(4);
+  if(document.activeElement!==tEl) tEl.value = target.toFixed(2);
+  if(document.activeElement!==cEl) cEl.value = chance.toFixed(2);
+  // relabel the Roll box
+  tEl.closest('.dice-box').querySelector('label').textContent = 'Roll ' + (dir==='over'?'Over':'Under');
+  // colour bands + thumb
+  const win = document.getElementById('diceWin');
+  const thumb = document.getElementById('diceThumb');
+  thumb.style.left = target + '%';
+  if(dir==='over'){ win.style.left = target + '%'; win.style.right = '0'; }
+  else { win.style.left = '0'; win.style.right = (100 - target) + '%'; }
+  diceProfit();
+}
+function diceProfit(){
+  const el = document.getElementById('diceProfit');
+  if(!el) return;
+  const bet = parseFloat(document.getElementById('diceBet')?.value) || 0;
+  const {mult} = diceCalc();
+  el.value = (bet * mult - bet).toFixed(2);
+}
+function diceEdit(kind, raw){
+  const v = parseFloat(raw);
+  const {dir} = diceCalc();
+  if(!isFinite(v)) { diceRefresh(); return; }
+  let chance;
+  if(kind==='mult')   chance = 99 / v;
+  else if(kind==='chance') chance = v;
+  else { // target typed directly
+    const t = diceClampTarget(v);
+    cfg.diceTarget = t; saveCfg(); diceRefresh(); return;
+  }
+  chance = Math.min(98, Math.max(2, chance));
+  cfg.diceTarget = dir==='over' ? (100 - chance) : chance;
+  saveCfg(); diceRefresh();
+}
+function diceFlip(){
+  const {dir, target} = diceCalc();
+  cfg.diceDir = dir==='over' ? 'under' : 'over';
+  cfg.diceTarget = diceClampTarget(100 - target); // mirror keeps win chance
+  saveCfg(); diceRefresh();
+}
+function diceBindDrag(){
+  const track = document.getElementById('diceTrack');
+  const move = (clientX)=>{
+    const r = track.getBoundingClientRect();
+    let pct = ((clientX - r.left) / r.width) * 100;
+    cfg.diceTarget = diceClampTarget(Math.round(pct*100)/100);
+    saveCfg(); diceRefresh();
+  };
+  const down = (e)=>{
+    e.preventDefault();
+    document.getElementById('diceThumb').classList.add('drag');
+    const mv = (ev)=> move((ev.touches?ev.touches[0]:ev).clientX);
+    mv(e);
+    const up = ()=>{
+      document.getElementById('diceThumb').classList.remove('drag');
+      window.removeEventListener('pointermove', mv);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', mv);
+    window.addEventListener('pointerup', up);
+  };
+  track.addEventListener('pointerdown', down);
+}
+function diceOutcome(bet){
+  const {dir, target, mult} = diceCalc();
+  const roll = Math.floor(Math.random()*10001)/100; // 0.00 - 100.00
+  const won = dir==='over' ? roll > target : roll < target;
+  const res = document.getElementById('diceResult');
+  const marker = document.getElementById('diceMarker');
+  if(res){
+    res.textContent = roll.toFixed(2);
+    res.className = 'dice-result ' + (won?'win':'lose');
+  }
+  if(marker){ marker.classList.add('show'); marker.style.left = roll + '%'; }
+  let profit = -bet;
+  if(won){ const win = bet*mult; setBal(state.bal + win); profit = win - bet; }
+  logBet('Dice', bet, profit);
+  return {won, roll, profit};
+}
+function dicePlay(){
+  const bet = readBet('diceBet');
+  if(bet<=0){ toast('Enter a bet','lose'); return; }
+  state.inGame = true;
+  setBal(state.bal - bet);
+  const {won, profit} = diceOutcome(bet);
+  if(won) toast(`+$${profit.toFixed(2)}`,'win'); else toast(`Lost $${bet.toFixed(2)}`,'lose');
+  state.inGame = false;
+  if(state.bal<=0) showWheel();
+}
+function diceAuto(){
+  runAuto('dice', 'diceBet', bet => new Promise(resolve=>{
+    setBal(state.bal - bet);
+    const {profit} = diceOutcome(bet);
+    resolve(profit);
+  }));
+}
+
+// ============ CASES ============
+// Full recreation of Stake Cases: weighted spinning reel, ~99% RTP.
+const CASES = [
+  {m:0,    w:0.572, c:'#5C64A0'},
+  {m:0.75, w:0.20,  c:'#8B93C7'},
+  {m:1.5,  w:0.13,  c:'#4CC9E8'},
+  {m:3,    w:0.05,  c:'#6C5CE7'},
+  {m:5,    w:0.03,  c:'#FF6BB5'},
+  {m:10,   w:0.012, c:'#3DDC97'},
+  {m:25,   w:0.005, c:'#F5C24B'},
+  {m:100,  w:0.001, c:'#FFD54A'},
+];
+function casesPick(){
+  const r = Math.random(); let a = 0;
+  for(const it of CASES){ a += it.w; if(r <= a) return it; }
+  return CASES[0];
+}
+function casesItemHTML(it, won){
+  return `<div class="cases-item${won?' won':''}" style="border-color:${it.c};color:${it.c}${won?`;box-shadow:0 0 18px ${it.c}`:''}">${it.m.toFixed(2)}×</div>`;
+}
+let casesBusy = false;
+function renderCases(){
+  app.innerHTML = `
+    <div class="game-wrap">
+      ${panel({
+        title:'Bet',
+        body: amountField('casesBet'),
+        action: `<button class="btn-primary" id="casesBtn" onclick="casesPlay()">Open Case</button>
+          <div class="stat-row"><span>Top prize</span><span>100.00×</span></div>
+          <div class="stat-row"><span>House edge</span><span>1%</span></div>`,
+        autoBody: amountField('casesBet') + autoConfig('cases'),
+        autoAction: `<button class="btn-primary" id="cases_autoBtn" onclick="casesAuto()">Start Autobet</button>`
+      })}
+      <div class="stage cases-stage">
+        <div class="cases-reel-wrap">
+          <div class="cases-pointer"></div>
+          <div class="cases-reel" id="casesReel"></div>
+        </div>
+        <div class="cases-payouts">
+          ${CASES.slice().sort((a,b)=>b.m-a.m).map(it=>`<div class="cases-chip" style="color:${it.c};border-color:${it.c}55">${it.m.toFixed(2)}×</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  // idle reel
+  const reel = document.getElementById('casesReel');
+  reel.style.transition='none'; reel.style.transform='translateX(0)';
+  reel.innerHTML = Array.from({length:20},()=>casesItemHTML(casesPick(),false)).join('');
+  initAutoButtons('cases');
+}
+function casesRun(bet, dur){
+  return new Promise(resolve=>{
+    const reel = document.getElementById('casesReel');
+    const wrap = reel.parentElement;
+    const winner = casesPick();
+    const STEP = 102, ITEM = 92, WIN = 50, N = 58;
+    const items = Array.from({length:N}, (_,i)=> i===WIN ? winner : casesPick());
+    reel.innerHTML = items.map(it=>casesItemHTML(it,false)).join('');
+    const jitter = (Math.random()*0.5 - 0.25) * ITEM;
+    const target = WIN*STEP + ITEM/2 + 10 - wrap.clientWidth/2 + jitter;
+    reel.style.transition='none'; reel.style.transform='translateX(0)';
+    void reel.offsetWidth;
+    reel.style.transition=`transform ${dur}ms cubic-bezier(.12,.75,.2,1)`;
+    reel.style.transform=`translateX(${-target}px)`;
+    setTimeout(()=>{
+      const cell = reel.children[WIN];
+      if(cell){ cell.classList.add('won'); cell.style.boxShadow=`0 0 18px ${winner.c}`; }
+      const win = bet * winner.m;
+      const profit = win - bet;
+      if(win>0) setBal(state.bal + win);
+      logBet('Cases', bet, profit);
+      resolve({winner, profit});
+    }, dur + 60);
+  });
+}
+function casesPlay(){
+  if(casesBusy) return;
+  const bet = readBet('casesBet');
+  if(bet<=0){ toast('Enter a bet','lose'); return; }
+  casesBusy = true; state.inGame = true;
+  setBal(state.bal - bet);
+  const btn = document.getElementById('casesBtn'); if(btn) btn.disabled = true;
+  casesRun(bet, 3900).then(({winner, profit})=>{
+    if(profit>=0) toast(`${winner.m.toFixed(2)}× — +$${profit.toFixed(2)}`,'win');
+    else toast(`${winner.m.toFixed(2)}× — $${bet.toFixed(2)}`,'lose');
+    casesBusy = false; state.inGame = false;
+    if(btn) btn.disabled = false;
+    if(state.bal<=0) showWheel();
+  });
+}
+function casesAuto(){
+  runAuto('cases', 'casesBet', bet => new Promise(resolve=>{
+    setBal(state.bal - bet);
+    casesRun(bet, 650).then(({profit})=> resolve(profit));
+  }));
 }
 
 // ============ LIMBO ============
@@ -2029,6 +2489,7 @@ window.addEventListener('resize', ()=>{
 
 // init
 document.getElementById('balDisplay').textContent = state.bal.toFixed(2);
+liveDragInit();
 route('home');
 if(state.bal <= 0) showWheel();
 </script>
