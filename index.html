@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1923" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>MWP Casino — Pump</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">MWP</span>
+        <span class="brand-sub">CASINO</span>
+      </div>
+      <div class="balance" id="balanceWrap">
+        <span class="balance-icon">◈</span>
+        <span class="balance-amount" id="balance">1,000.00</span>
+      </div>
+    </header>
+
+    <!-- Game stage -->
+    <main class="stage">
+      <div class="game-panel">
+        <div class="multiplier-readout" id="multiReadout">
+          <span class="multi-value" id="multiValue">1.00×</span>
+          <span class="multi-label" id="multiLabel">Tap PUMP to start</span>
+        </div>
+
+        <div class="balloon-arena" id="arena">
+          <div class="pop-flash" id="popFlash"></div>
+          <div class="balloon" id="balloon">
+            <div class="balloon-body">
+              <div class="balloon-shine"></div>
+              <span class="balloon-face" id="balloonFace">◕‿◕</span>
+            </div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="particles" id="particles"></div>
+        </div>
+
+        <div class="potential" id="potentialWrap">
+          <span class="pot-label">Potential win</span>
+          <span class="pot-value" id="potValue">0.00</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <section class="controls">
+        <div class="bet-row">
+          <label class="field">
+            <span class="field-label">Bet</span>
+            <div class="stepper">
+              <button class="step-btn" data-bet="half" aria-label="Halve bet">½</button>
+              <input id="betInput" class="bet-input" inputmode="decimal" value="10.00" />
+              <button class="step-btn" data-bet="double" aria-label="Double bet">2×</button>
+            </div>
+          </label>
+          <label class="field">
+            <span class="field-label">Difficulty</span>
+            <select id="difficulty" class="select">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+              <option value="expert">Expert</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button id="pumpBtn" class="btn btn-pump">PUMP</button>
+          <button id="cashBtn" class="btn btn-cash" disabled>CASH OUT</button>
+        </div>
+
+        <div class="stat-row" id="statRow">
+          <div class="stat"><span class="stat-k">Next</span><span class="stat-v" id="nextMulti">—</span></div>
+          <div class="stat"><span class="stat-k">Pump risk</span><span class="stat-v" id="popChance">—</span></div>
+          <div class="stat"><span class="stat-k">Pumps</span><span class="stat-v" id="pumpCount">0</span></div>
+        </div>
+      </section>
+
+      <!-- History -->
+      <section class="history">
+        <div class="history-head">
+          <span>Recent</span>
+        </div>
+        <div class="history-track" id="historyTrack"></div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
